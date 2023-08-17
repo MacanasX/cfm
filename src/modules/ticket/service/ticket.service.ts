@@ -4,7 +4,6 @@ import { CreateTicketDto } from '../dto/create-ticket.dto';
 import { UserRepository } from '../../user/repository/user.repository';
 import { Ticket } from '../db/ticket.entity';
 
-
 @Injectable()
 export class TicketService {
   constructor(
@@ -25,11 +24,14 @@ export class TicketService {
       assignedUser = await this.userRepository.findUserByIdWithTickets(
         dto.assigned_to,
       );
+
       if (assignedUser === null)
         throw new NotFoundException('Assigned User not found');
       if (!assignedUser.assigned_tickets) assignedUser.assigned_tickets = [];
       assignedUser.assigned_tickets.push(ticket);
+      ticket.assigned_to = assignedUser;
     }
+
     user.created_tickets.push(ticket);
     await this.ticketRepository.saveTicket(ticket);
     await this.userRepository.saveUser(user);

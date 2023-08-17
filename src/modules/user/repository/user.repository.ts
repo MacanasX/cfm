@@ -43,7 +43,7 @@ export class UserRepository extends Repository<User> {
     try {
       return await this.findOne({
         where: { id },
-        relations: ['created_tickets'],
+        relations: ['created_tickets', 'assigned_tickets'],
       });
     } catch (err) {
       this.logger.error(`Error getting user by Id: ${err}`);
