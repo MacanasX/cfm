@@ -20,4 +20,9 @@ export class UserService {
   async getAllUserInformations(email: string) {
     return await this.userRepository.findCurrentUser(email);
   }
+
+  async incrementTokenVersion(user: User) {
+    user.tokenVersion++;
+    await this.userRepository.saveUser(user);
+  }
 }

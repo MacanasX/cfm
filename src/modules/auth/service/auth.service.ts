@@ -12,6 +12,7 @@ import { User } from '../../user/db/user.entity';
 import { UserRepository } from '../../user/repository/user.repository';
 import { verify } from 'argon2';
 import { JwtPayload } from 'jsonwebtoken';
+import { UserService } from '../../user/service/user.service';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
     @Inject(authConfig.KEY)
     private readonly config: ConfigType<typeof authConfig>,
     private readonly userRepository: UserRepository,
+    private readonly userService: UserService,
   ) {
     this.validateConfig();
     this.logger.log('AuthService initialized');
@@ -49,6 +51,7 @@ export class AuthService {
 
   public async loginUser(email: string, password: string) {
     const user = await this.userRepository.findUserByEmailWithPassword(email);
+
     if (user === null) throw new NotFoundException();
 
     const isValid: boolean = await this.verifyLogin(user, password);
@@ -62,13 +65,21 @@ export class AuthService {
   }
   public async refresh(refreshToken: string) {
     const payload = this.verifyToken(refreshToken);
-    this.verifyMethod(payload, this.config.refresh.method);
+
     const user = await this.userRepository.findUserForAuth(payload.userId);
+
     if (user === null) throw new NotFoundException('User not found');
 
     this.verifyTokenVersion(payload, user);
 
     return { refreshToken: this.signToken(user, this.config.refresh) };
+  }
+  public async logout(payload: JwtPayload) {
+    const user = await this.userRepository.findUserForAuth(payload.userId);
+
+    this.verifyTokenVersion(payload, user);
+
+    await this.userService.incrementTokenVersion(user);
   }
 
   async verifyLogin(user: User, password: string): Promise<boolean> {
@@ -98,7 +109,9 @@ export class AuthService {
 
   public async verifyAccessToken(token: string): Promise<JwtPayload> {
     const payload = this.verifyToken(token);
-    this.verifyMethod(payload, this.config.access.method);
+    const user = await this.userRepository.findUserForAuth(payload.userId);
+    this.verifyMethod(payload, this.config);
+    this.verifyTokenVersion(payload, user);
     return payload;
   }
 
@@ -110,14 +123,17 @@ export class AuthService {
       throw new UnauthorizedException();
     }
   }
-  verifyMethod(payload: JwtPayload, method: string): void {
-    if (payload.method !== method) {
+  verifyMethod(payload: JwtPayload, method): void {
+    if (
+      payload.method !== method.access.method &&
+      payload.method !== method.refresh.method
+    ) {
       this.logger.error(`Invalid Token method: ${payload.method}`);
       throw new UnauthorizedException();
     }
   }
   verifyTokenVersion(payload: JwtPayload, user: User) {
-    if (payload.version !== user.tokenVersion) {
+    if (payload.tokenVersion !== user.tokenVersion) {
       this.logger.error('Invalid token version');
       throw new UnauthorizedException();
     }

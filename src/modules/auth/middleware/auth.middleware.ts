@@ -28,7 +28,6 @@ export class AuthMiddleware implements NestMiddleware {
   }
   use(req: Request, res: MiddlewareResponse, next: NextFunction) {
     const token = this.extractToken(req);
-
     this.verify(token, res).then(next).catch(next);
   }
 }

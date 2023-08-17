@@ -32,7 +32,7 @@ export class UserRepository extends Repository<User> {
     try {
       return await this.findOne({
         where: { email },
-        select: { email: true, password: true, id: true },
+        select: { email: true, password: true, id: true, tokenVersion: true },
       });
     } catch (err) {
       this.logger.error(`Error getting user by email: ${err}`);
@@ -73,6 +73,7 @@ export class UserRepository extends Repository<User> {
     try {
       return await this.findOne({
         where: { id },
+        select: { id: true, tokenVersion: true },
       });
     } catch (err) {
       this.logger.error(`Error getting user by Id: ${err}`);
