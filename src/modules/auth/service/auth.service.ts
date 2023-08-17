@@ -20,10 +20,10 @@ export class AuthService {
     if (this.config.access.method === '') {
       throw new Error('Access token method is not set');
     }
-    if (this.config.access.expiresIn) {
+    if (this.config.access.expiresIn === '') {
       throw new Error('Access token expiration is not set');
     }
-    if (this.config.refresh.method) {
+    if (this.config.refresh.method === '') {
       throw new Error('Refresh token method is not set');
     }
     if (this.config.refresh.expiresIn === '') {
