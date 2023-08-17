@@ -17,7 +17,10 @@ export class Ticket extends BaseEntity {
   @ManyToOne(() => User, (user) => user.created_tickets, { nullable: false })
   created_by: User;
 
-  @ManyToOne(() => User, (user) => user.assigned_tickets, { nullable: true })
+  @ManyToOne(() => User, (user) => user.assigned_tickets, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   assigned_to: User;
 
   @Column({

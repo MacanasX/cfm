@@ -3,6 +3,7 @@ import { TicketRepository } from '../repository/ticket.repository';
 import { CreateTicketDto } from '../dto/create-ticket.dto';
 import { UserRepository } from '../../user/repository/user.repository';
 import { Ticket } from '../db/ticket.entity';
+import { TicketStatus } from '../enum/status.enum';
 
 @Injectable()
 export class TicketService {
@@ -30,11 +31,12 @@ export class TicketService {
       if (!assignedUser.assigned_tickets) assignedUser.assigned_tickets = [];
       assignedUser.assigned_tickets.push(ticket);
       ticket.assigned_to = assignedUser;
+      ticket.status = TicketStatus.PROGRESS;
+      await this.userRepository.saveUser(assignedUser);
     }
 
     user.created_tickets.push(ticket);
     await this.ticketRepository.saveTicket(ticket);
     await this.userRepository.saveUser(user);
-    await this.userRepository.saveUser(assignedUser);
   }
 }
