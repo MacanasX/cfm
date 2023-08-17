@@ -14,10 +14,10 @@ export class Ticket extends BaseEntity {
   @Column({ type: Date })
   due_Date: Date;
 
-  @ManyToOne(() => User, (user) => user.created_tickets)
+  @ManyToOne(() => User, (user) => user.created_tickets, { nullable: false })
   created_by: User;
 
-  @ManyToOne(() => User, (user) => user.assigned_tickets)
+  @ManyToOne(() => User, (user) => user.assigned_tickets, { nullable: true })
   assigned_to: User;
 
   @Column({

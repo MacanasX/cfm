@@ -25,12 +25,10 @@ export class AuthMiddleware implements NestMiddleware {
   async verify(token: string, res: MiddlewareResponse): Promise<void> {
     const payload = await this.authService.verifyAccessToken(token);
     res.locals.payload = payload;
-    console.log('HERE');
-    console.log(payload);
   }
   use(req: Request, res: MiddlewareResponse, next: NextFunction) {
     const token = this.extractToken(req);
-    console.log(token);
+
     this.verify(token, res).then(next).catch(next);
   }
 }

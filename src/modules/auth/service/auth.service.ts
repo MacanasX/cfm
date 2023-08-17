@@ -71,24 +71,16 @@ export class AuthService {
   }
 
   private signToken(
-    user,
+    user: User,
     { method, expiresIn }: { method: string; expiresIn: string },
   ): string {
-    const payload = { userEmail: user.email, method };
+    const payload = { userId: user.id, userEmail: user.email, method };
     return Jwt.sign(payload, this.config.secret, { expiresIn });
   }
 
   public async verifyAccessToken(token: string): Promise<JwtPayload> {
     const payload = this.verifyToken(token);
     this.verifyMethod(payload, this.config.access.method);
-
-    // const subject = payload.sub;
-
-    /*if (!subject) {
-      this.logger.error('No Subject');
-      throw new UnauthorizedException();
-    }*/
-
     return payload;
   }
 

@@ -32,7 +32,7 @@ export class UserRepository extends Repository<User> {
     try {
       return await this.findOne({
         where: { email },
-        select: { email: true, password: true },
+        select: { email: true, password: true, id: true },
       });
     } catch (err) {
       this.logger.error(`Error getting user by email: ${err}`);
