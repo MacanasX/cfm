@@ -5,12 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import { UserModule } from './modules/user/user.module';
+import authConfig from './config/auth.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig],
+      load: [databaseConfig, authConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
