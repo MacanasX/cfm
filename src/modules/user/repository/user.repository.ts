@@ -69,4 +69,14 @@ export class UserRepository extends Repository<User> {
       throw new ServiceUnavailableException();
     }
   }
+  async findUserForAuth(id: string) {
+    try {
+      return await this.findOne({
+        where: { id },
+      });
+    } catch (err) {
+      this.logger.error(`Error getting user by Id: ${err}`);
+      throw new ServiceUnavailableException();
+    }
+  }
 }

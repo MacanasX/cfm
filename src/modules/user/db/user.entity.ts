@@ -10,6 +10,9 @@ export class User extends BaseEntity {
   @Column({ nullable: false, unique: true })
   email: string;
 
+  @Column({ nullable: false, select: false, default: 0, type: 'integer' })
+  tokenVersion: number;
+
   @Column({ nullable: false, select: false })
   password: string;
 

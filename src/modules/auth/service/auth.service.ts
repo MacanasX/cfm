@@ -55,7 +55,20 @@ export class AuthService {
 
     if (!isValid) throw new UnauthorizedException();
 
-    return { accessToken: this.signToken(user, this.config.access) };
+    return {
+      accessToken: this.signToken(user, this.config.access),
+      refreshToken: this.signToken(user, this.config.refresh),
+    };
+  }
+  public async refresh(refreshToken: string) {
+    const payload = this.verifyToken(refreshToken);
+    this.verifyMethod(payload, this.config.refresh.method);
+    const user = await this.userRepository.findUserForAuth(payload.userId);
+    if (user === null) throw new NotFoundException('User not found');
+
+    this.verifyTokenVersion(payload, user);
+
+    return { refreshToken: this.signToken(user, this.config.refresh) };
   }
 
   async verifyLogin(user: User, password: string): Promise<boolean> {
@@ -74,7 +87,12 @@ export class AuthService {
     user: User,
     { method, expiresIn }: { method: string; expiresIn: string },
   ): string {
-    const payload = { userId: user.id, userEmail: user.email, method };
+    const payload = {
+      userId: user.id,
+      userEmail: user.email,
+      method,
+      tokenVersion: user.tokenVersion,
+    };
     return Jwt.sign(payload, this.config.secret, { expiresIn });
   }
 
@@ -95,6 +113,12 @@ export class AuthService {
   verifyMethod(payload: JwtPayload, method: string): void {
     if (payload.method !== method) {
       this.logger.error(`Invalid Token method: ${payload.method}`);
+      throw new UnauthorizedException();
+    }
+  }
+  verifyTokenVersion(payload: JwtPayload, user: User) {
+    if (payload.version !== user.tokenVersion) {
+      this.logger.error('Invalid token version');
       throw new UnauthorizedException();
     }
   }
