@@ -12,7 +12,6 @@ import { User } from '../../user/db/user.entity';
 import { UserRepository } from '../../user/repository/user.repository';
 import { verify } from 'argon2';
 import { JwtPayload } from 'jsonwebtoken';
-import { JwtVerifyOptions } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -56,7 +55,7 @@ export class AuthService {
 
     if (!isValid) throw new UnauthorizedException();
 
-    return { accessToken: this.signToken(user.id, this.config.access) };
+    return { accessToken: this.signToken(user, this.config.access) };
   }
 
   async verifyLogin(user: User, password: string): Promise<boolean> {
@@ -72,22 +71,23 @@ export class AuthService {
   }
 
   private signToken(
-    id: string,
+    user,
     { method, expiresIn }: { method: string; expiresIn: string },
   ): string {
-    return Jwt.sign({ id, method }, this.config.secret, { expiresIn });
+    const payload = { userEmail: user.email, method };
+    return Jwt.sign(payload, this.config.secret, { expiresIn });
   }
 
   public async verifyAccessToken(token: string): Promise<JwtPayload> {
     const payload = this.verifyToken(token);
     this.verifyMethod(payload, this.config.access.method);
 
-    const subject = payload.sub;
+    // const subject = payload.sub;
 
-    if (!subject) {
+    /*if (!subject) {
       this.logger.error('No Subject');
       throw new UnauthorizedException();
-    }
+    }*/
 
     return payload;
   }

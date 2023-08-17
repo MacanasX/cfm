@@ -17,9 +17,7 @@ export class UserService {
     await this.userRepository.saveUser(user);
   }
 
-  async getUserByEmailWithPassword(email: string): Promise<User> {
-    const user = await this.userRepository.findUserByEmailWithPassword(email);
-    if (!user) throw new ServiceUnavailableException();
-    return user;
+  async getAllUserInformations(email: string) {
+    return await this.userRepository.findCurrentUser(email);
   }
 }
