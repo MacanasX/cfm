@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Matches,
 } from 'class-validator';
 
 export class CreateTicketDto {
@@ -16,16 +17,11 @@ export class CreateTicketDto {
   description?: string;
 
   @IsOptional()
-  @IsDate()
-  due_Date?: Date;
-
-  @IsNotEmpty()
-  @IsString()
-  @IsUUID()
-  created_by: string;
+  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  due_Date?: string;
 
   @IsOptional()
   @IsString()
   @IsUUID()
-  assigned_to: string;
+  assigned_to?: string;
 }
