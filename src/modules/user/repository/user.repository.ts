@@ -27,4 +27,16 @@ export class UserRepository extends Repository<User> {
       throw new ServiceUnavailableException();
     }
   }
+
+  async findUserByEmailWithPassword(email: string): Promise<User | null> {
+    try {
+      return await this.findOne({
+        where: { email },
+        select: { email: true, password: true },
+      });
+    } catch (err) {
+      this.logger.error(`Error getting user by email: ${err}`);
+      throw new ServiceUnavailableException();
+    }
+  }
 }
