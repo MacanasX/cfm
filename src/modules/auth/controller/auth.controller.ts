@@ -8,6 +8,6 @@ export class AuthController {
 
   @Post('login')
   public async login(@Body() dto: LoginUserDto) {
-    await this.authService.loginUser(dto.email, dto.password);
+    return await this.authService.loginUser(dto.email, dto.password);
   }
 }
