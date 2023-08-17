@@ -1,5 +1,6 @@
 import {
   Inject,
+  Injectable,
   Logger,
   NotFoundException,
   UnauthorizedException,
@@ -10,7 +11,10 @@ import * as Jwt from 'jsonwebtoken';
 import { User } from '../../user/db/user.entity';
 import { UserRepository } from '../../user/repository/user.repository';
 import { verify } from 'argon2';
+import { JwtPayload } from 'jsonwebtoken';
+import { JwtVerifyOptions } from '@nestjs/jwt';
 
+@Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
@@ -72,5 +76,34 @@ export class AuthService {
     { method, expiresIn }: { method: string; expiresIn: string },
   ): string {
     return Jwt.sign({ id, method }, this.config.secret, { expiresIn });
+  }
+
+  public async verifyAccessToken(token: string): Promise<JwtPayload> {
+    const payload = this.verifyToken(token);
+    this.verifyMethod(payload, this.config.access.method);
+
+    const subject = payload.sub;
+
+    if (!subject) {
+      this.logger.error('No Subject');
+      throw new UnauthorizedException();
+    }
+
+    return payload;
+  }
+
+  verifyToken(token: string): JwtPayload {
+    try {
+      return Jwt.verify(token, this.config.secret) as JwtPayload;
+    } catch (err) {
+      this.logger.error(err);
+      throw new UnauthorizedException();
+    }
+  }
+  verifyMethod(payload: JwtPayload, method: string): void {
+    if (payload.method !== method) {
+      this.logger.error(`Invalid Token method: ${payload.method}`);
+      throw new UnauthorizedException();
+    }
   }
 }
