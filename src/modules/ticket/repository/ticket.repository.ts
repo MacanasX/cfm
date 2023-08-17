@@ -1,6 +1,12 @@
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, QueryFailedError, Repository } from 'typeorm';
 import { Ticket } from '../db/ticket.entity';
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
+import { User } from '../../user/db/user.entity';
 
 @Injectable()
 export class TicketRepository extends Repository<Ticket> {
@@ -8,5 +14,14 @@ export class TicketRepository extends Repository<Ticket> {
 
   constructor(dataSource: DataSource) {
     super(Ticket, dataSource.createEntityManager());
+  }
+
+  async saveTicket(ticket: Ticket): Promise<Ticket> {
+    try {
+      return await this.save(ticket);
+    } catch (err) {
+      this.logger.error(`Error saving ticket: ${err}`);
+      throw new ServiceUnavailableException();
+    }
   }
 }

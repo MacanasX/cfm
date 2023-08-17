@@ -22,9 +22,8 @@ export class Ticket extends BaseEntity {
 
   @Column({
     type: 'enum',
-    nullable: false,
-    default: TicketStatus.TODO,
     enum: TicketStatus,
+    default: TicketStatus.TODO,
   })
-  status = TicketStatus;
+  status: TicketStatus;
 }

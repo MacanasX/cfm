@@ -20,6 +20,9 @@ export class TicketController {
     @Body() dto: CreateTicketDto,
     @Res({ passthrough: true }) res: MiddlewareResponse,
   ) {
-    await this.ticketService.createTicket(dto, res.locals.payload.userId);
+    return await this.ticketService.createTicket(
+      dto,
+      res.locals.payload.userId,
+    );
   }
 }

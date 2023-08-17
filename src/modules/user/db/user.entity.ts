@@ -13,9 +13,9 @@ export class User extends BaseEntity {
   @Column({ nullable: false, select: false })
   password: string;
 
-  @OneToMany(() => Ticket, (ticket) => ticket.created_by)
+  @OneToMany(() => Ticket, (ticket) => ticket.created_by, { nullable: false })
   created_tickets: Ticket[];
 
-  @OneToMany(() => Ticket, (ticket) => ticket.assigned_to)
+  @OneToMany(() => Ticket, (ticket) => ticket.assigned_to, { nullable: true })
   assigned_tickets: Ticket[];
 }

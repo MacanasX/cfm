@@ -17,8 +17,8 @@ export class CreateTicketDto {
   description?: string;
 
   @IsOptional()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/)
-  due_Date?: string;
+  @IsString()
+  due_Date?: Date;
 
   @IsOptional()
   @IsString()
