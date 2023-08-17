@@ -13,6 +13,7 @@ import { UserModule } from './modules/user/user.module';
 import authConfig from './config/auth.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthMiddleware } from './modules/auth/middleware/auth.middleware';
+import { TicketModule } from './modules/ticket/ticket.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AuthMiddleware } from './modules/auth/middleware/auth.middleware';
     }),
     UserModule,
     AuthModule,
+    TicketModule,
   ],
   controllers: [AppController],
   providers: [AppService],
