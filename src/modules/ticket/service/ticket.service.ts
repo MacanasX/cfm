@@ -69,7 +69,7 @@ export class TicketService {
           ticket.assigned_to.id,
         );
       currentAssignedUser.assigned_tickets.filter(
-        (ticket) => ticket.id != ticket.id,
+        (ticketToRemove) => ticketToRemove.id != ticket.id,
       );
       await this.userRepository.saveUser(currentAssignedUser);
     }
