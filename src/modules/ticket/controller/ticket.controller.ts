@@ -9,6 +9,7 @@ import {
 import { TicketService } from '../service/ticket.service';
 import { CreateTicketDto } from '../dto/create-ticket.dto';
 import { MiddlewareResponse } from '../../auth/middleware/auth.interface';
+import { AssignUserToTicketDto } from '../dto/assign-user-to-ticket.dto';
 
 @Controller('ticket')
 export class TicketController {
@@ -24,5 +25,10 @@ export class TicketController {
       dto,
       res.locals.payload.userId,
     );
+  }
+  @Post('assign')
+  @HttpCode(HttpStatus.CREATED)
+  async assignUser(@Body() dto: AssignUserToTicketDto) {
+    await this.ticketService.asignUserToTicket(dto);
   }
 }

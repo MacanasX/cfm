@@ -24,4 +24,16 @@ export class TicketRepository extends Repository<Ticket> {
       throw new ServiceUnavailableException();
     }
   }
+
+  async findTicketById(id: string): Promise<Ticket> {
+    try {
+      return await this.findOne({
+        where: { id },
+        relations: ['assigned_to', 'created_by'],
+      });
+    } catch (err) {
+      this.logger.error(`Error finding Ticket by Id: ${err}`);
+      throw new ServiceUnavailableException();
+    }
+  }
 }

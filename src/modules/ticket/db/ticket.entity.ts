@@ -11,8 +11,8 @@ export class Ticket extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ type: Date, nullable: true })
-  due_Date: Date;
+  @Column({ type: Date, nullable: true, default: null })
+  due_Date: Date | null;
 
   @ManyToOne(() => User, (user) => user.created_tickets, { nullable: false })
   created_by: User;
